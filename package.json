@@ -1,6 +1,6 @@
 {
   "name": "graphql-query-merger",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Merge and unify multiple GraphQL queries into a single operation with field and variable conflict resolution.",
   "main": "dist/index.umd.js",
   "module": "dist/index.es.js",
