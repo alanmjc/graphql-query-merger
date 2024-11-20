@@ -20,6 +20,8 @@
   "author": "A Juárez",
   "license": "ISC",
   "devDependencies": {
+    "@babel/preset-env": "^7.26.0",
+    "babel-jest": "^29.7.0",
     "graphql": "^16.9.0",
     "graphql-tag": "^2.12.6",
     "jest": "^29.7.0",
