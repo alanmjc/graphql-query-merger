@@ -89,16 +89,14 @@ class GraphQLQueryMerger {
     );
 
     if (operationDefinitions.length === 0) {
-      throw new Error(
-        'No se encontró una definición de operación en el documento proporcionado.',
-      );
+      throw new Error('No operation definition found in the provided document.');
     }
 
     const operationType = operationDefinitions[0].operation;
 
     if (this.operationType && this.operationType !== operationType) {
       throw new Error(
-        `No se pueden combinar diferentes tipos de operaciones: ${this.operationType} y ${operationType}.`,
+        `Cannot merge different operation types: ${this.operationType} and ${operationType}.`,
       );
     }
 
