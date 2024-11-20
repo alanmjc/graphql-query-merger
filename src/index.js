@@ -1,6 +1,6 @@
-const { Kind, parse, visit } = require('graphql');
+import { Kind, parse, visit } from 'graphql';
 
-function renameVariablesAndFragments(document, variables, uniqueId) {
+const renameVariablesAndFragments = (document, variables, uniqueId) => {
   const variableNameMap = {};
   const fragmentNameMap = {};
 
@@ -63,7 +63,7 @@ function renameVariablesAndFragments(document, variables, uniqueId) {
   }
 
   return { document: newDocument, variables: newVariables };
-}
+};
 
 class GraphQLQueryMerger {
   constructor(operationName) {
@@ -148,8 +148,6 @@ class GraphQLQueryMerger {
   }
 }
 
-function mergeQueries(operationName = '') {
-  return new GraphQLQueryMerger(operationName);
-}
+const mergeQueries = (operationName = '') => new GraphQLQueryMerger(operationName);
 
-module.exports = { mergeQueries };
+export { mergeQueries };
