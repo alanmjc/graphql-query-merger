@@ -1,143 +1,102 @@
-var __getOwnPropNames = Object.getOwnPropertyNames;
-var __commonJS = (cb, mod) => function __require() {
-  return mod || (0, cb[__getOwnPropNames(cb)[0]])((mod = { exports: {} }).exports, mod), mod.exports;
-};
-var require_index_es = __commonJS({
-  "index.es.js"(exports, module) {
-    const { Kind, parse, visit } = require("graphql");
-    function renameVariablesAndFragments(document, variables, uniqueId) {
-      const variableNameMap = {};
-      const fragmentNameMap = {};
-      const newDocument = visit(document, {
-        [Kind.VARIABLE_DEFINITION](node) {
-          const oldName = node.variable.name.value;
-          const newName = `${oldName}_${uniqueId}`;
-          variableNameMap[oldName] = newName;
+import { parse as p, Kind as i, visit as N } from "graphql";
+const d = (u, a, r) => {
+  const o = {}, l = {}, s = N(u, {
+    [i.VARIABLE_DEFINITION](e) {
+      const n = e.variable.name.value, t = `${n}_${r}`;
+      return o[n] = t, {
+        ...e,
+        variable: {
+          ...e.variable,
+          name: { kind: i.NAME, value: t }
+        }
+      };
+    },
+    [i.VARIABLE](e) {
+      const n = e.name.value, t = o[n] || n;
+      return {
+        ...e,
+        name: { kind: i.NAME, value: t }
+      };
+    },
+    [i.FRAGMENT_DEFINITION](e) {
+      const n = e.name.value, t = `${n}_${r}`;
+      return l[n] = t, {
+        ...e,
+        name: { kind: i.NAME, value: t }
+      };
+    },
+    [i.FRAGMENT_SPREAD](e) {
+      const n = e.name.value, t = l[n] || n;
+      return {
+        ...e,
+        name: { kind: i.NAME, value: t }
+      };
+    },
+    [i.DIRECTIVE](e) {
+      return N(e, {
+        [i.VARIABLE](n) {
+          const t = n.name.value, m = o[t] || t;
           return {
-            ...node,
-            variable: {
-              ...node.variable,
-              name: { kind: Kind.NAME, value: newName }
-            }
+            ...n,
+            name: { kind: i.NAME, value: m }
           };
-        },
-        [Kind.VARIABLE](node) {
-          const oldName = node.name.value;
-          const newName = variableNameMap[oldName] || oldName;
-          return {
-            ...node,
-            name: { kind: Kind.NAME, value: newName }
-          };
-        },
-        [Kind.FRAGMENT_DEFINITION](node) {
-          const oldName = node.name.value;
-          const newName = `${oldName}_${uniqueId}`;
-          fragmentNameMap[oldName] = newName;
-          return {
-            ...node,
-            name: { kind: Kind.NAME, value: newName }
-          };
-        },
-        [Kind.FRAGMENT_SPREAD](node) {
-          const oldName = node.name.value;
-          const newName = fragmentNameMap[oldName] || oldName;
-          return {
-            ...node,
-            name: { kind: Kind.NAME, value: newName }
-          };
-        },
-        [Kind.DIRECTIVE](node) {
-          return visit(node, {
-            [Kind.VARIABLE](varNode) {
-              const oldName = varNode.name.value;
-              const newName = variableNameMap[oldName] || oldName;
-              return {
-                ...varNode,
-                name: { kind: Kind.NAME, value: newName }
-              };
-            }
-          });
         }
       });
-      const newVariables = {};
-      for (const [key, value] of Object.entries(variables)) {
-        const newKey = variableNameMap[key] || key;
-        newVariables[newKey] = value;
-      }
-      return { document: newDocument, variables: newVariables };
     }
-    class GraphQLQueryMerger {
-      constructor(operationName) {
-        this.operationName = operationName;
-        this.documents = [];
-        this.internalVariables = [];
-        this.uniqueIdCounter = 1;
-        this.operationType = null;
-      }
-      push(document, variables = {}) {
-        if (typeof document === "string") {
-          document = parse(document);
-        }
-        const uniqueId = this.uniqueIdCounter++;
-        const { document: renamedDocument, variables: renamedVariables } = renameVariablesAndFragments(document, variables, uniqueId);
-        const operationDefinitions = renamedDocument.definitions.filter(
-          (def) => def.kind === Kind.OPERATION_DEFINITION
-        );
-        if (operationDefinitions.length === 0) {
-          throw new Error(
-            "No se encontró una definición de operación en el documento proporcionado."
-          );
-        }
-        const operationType = operationDefinitions[0].operation;
-        if (this.operationType && this.operationType !== operationType) {
-          throw new Error(
-            `No se pueden combinar diferentes tipos de operaciones: ${this.operationType} y ${operationType}.`
-          );
-        }
-        this.operationType = operationType;
-        this.documents.push(renamedDocument);
-        this.internalVariables.push(renamedVariables);
-        return this;
-      }
-      get query() {
-        const allVariableDefinitions = [];
-        const allSelections = [];
-        const allFragmentDefinitions = [];
-        for (const doc of this.documents) {
-          for (const definition of doc.definitions) {
-            if (definition.kind === Kind.OPERATION_DEFINITION) {
-              allVariableDefinitions.push(...definition.variableDefinitions || []);
-              allSelections.push(...definition.selectionSet.selections);
-            } else if (definition.kind === Kind.FRAGMENT_DEFINITION) {
-              allFragmentDefinitions.push(definition);
-            }
-          }
-        }
-        return {
-          kind: Kind.DOCUMENT,
-          definitions: [
-            {
-              kind: Kind.OPERATION_DEFINITION,
-              operation: this.operationType,
-              name: { kind: Kind.NAME, value: this.operationName || "" },
-              variableDefinitions: allVariableDefinitions,
-              selectionSet: {
-                kind: Kind.SELECTION_SET,
-                selections: allSelections
-              }
-            },
-            ...allFragmentDefinitions
-          ]
-        };
-      }
-      get variables() {
-        return Object.assign({}, ...this.internalVariables);
-      }
-    }
-    function mergeQueries(operationName = "") {
-      return new GraphQLQueryMerger(operationName);
-    }
-    module.exports = { mergeQueries };
+  }), c = {};
+  for (const [e, n] of Object.entries(a)) {
+    const t = o[e] || e;
+    c[t] = n;
   }
-});
-export default require_index_es();
+  return { document: s, variables: c };
+};
+class E {
+  constructor(a) {
+    this.operationName = a, this.documents = [], this.internalVariables = [], this.uniqueIdCounter = 1, this.operationType = null;
+  }
+  push(a, r = {}) {
+    typeof a == "string" && (a = p(a));
+    const o = this.uniqueIdCounter++, { document: l, variables: s } = d(a, r, o), c = l.definitions.filter(
+      (n) => n.kind === i.OPERATION_DEFINITION
+    );
+    if (c.length === 0)
+      throw new Error(
+        "No se encontró una definición de operación en el documento proporcionado."
+      );
+    const e = c[0].operation;
+    if (this.operationType && this.operationType !== e)
+      throw new Error(
+        `No se pueden combinar diferentes tipos de operaciones: ${this.operationType} y ${e}.`
+      );
+    return this.operationType = e, this.documents.push(l), this.internalVariables.push(s), this;
+  }
+  get query() {
+    const a = [], r = [], o = [];
+    for (const l of this.documents)
+      for (const s of l.definitions)
+        s.kind === i.OPERATION_DEFINITION ? (a.push(...s.variableDefinitions || []), r.push(...s.selectionSet.selections)) : s.kind === i.FRAGMENT_DEFINITION && o.push(s);
+    return {
+      kind: i.DOCUMENT,
+      definitions: [
+        {
+          kind: i.OPERATION_DEFINITION,
+          operation: this.operationType,
+          name: { kind: i.NAME, value: this.operationName || "" },
+          variableDefinitions: a,
+          selectionSet: {
+            kind: i.SELECTION_SET,
+            selections: r
+          }
+        },
+        ...o
+      ]
+    };
+  }
+  get variables() {
+    return Object.assign({}, ...this.internalVariables);
+  }
+}
+const h = (u = "") => new E(u);
+export {
+  h as mergeQueries
+};
