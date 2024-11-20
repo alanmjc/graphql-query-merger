@@ -1,0 +1,26 @@
+{
+  "name": "graphql-query-merger",
+  "version": "1.0.0",
+  "description": "Merge and unify multiple GraphQL queries into a single operation with field and variable conflict resolution.",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "keywords": [
+    "graphql",
+    "query",
+    "merge"
+  ],
+  "author": "A Juárez",
+  "license": "ISC",
+  "devDependencies": {
+    "@babel/cli": "^7.25.9",
+    "@babel/core": "^7.26.0",
+    "@babel/preset-env": "^7.26.0",
+    "jest": "^29.7.0"
+  },
+  "dependencies": {
+    "graphql": "^16.9.0",
+    "graphql-tag": "^2.12.6"
+  }
+}
