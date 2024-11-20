@@ -8,6 +8,7 @@
 
 - [GraphQL Query Merger](#graphql-query-merger)
   - [Table of Contents](#table-of-contents)
+  - [Features](#features)
   - [Installation](#installation)
   - [Usage](#usage)
     - [Importing the Library](#importing-the-library)
@@ -15,8 +16,16 @@
       - [Basic Query Combination](#basic-query-combination)
       - [Combining Queries with Variables](#combining-queries-with-variables)
       - [Conditional Query Combination](#conditional-query-combination)
-  - [Features](#features)
   - [Notes](#notes)
+
+---
+
+## Features
+
+- **Merge GraphQL Queries**: Seamlessly combine multiple queries into one.
+- **Variable Deduplication**: Automatically handles conflicts by renaming variables.
+- **Supports Conditional Queries**: Add queries dynamically based on runtime logic.
+- **Customizable Query Names**: Optionally name the resulting query.
 
 ---
 
@@ -210,15 +219,6 @@ query optionalQueryName($email_1: String!, $id_2: ID!) {
   "id_2": 10
 }
 ```
-
----
-
-## Features
-
-- **Merge GraphQL Queries**: Seamlessly combine multiple queries into one.
-- **Variable Deduplication**: Automatically handles conflicts by renaming variables.
-- **Supports Conditional Queries**: Add queries dynamically based on runtime logic.
-- **Customizable Query Names**: Optionally name the resulting query.
 
 ---
 
