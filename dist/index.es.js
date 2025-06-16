@@ -1,5 +1,5 @@
-import { parse as p, Kind as t, visit as m } from "graphql";
-const d = (c, a, s) => {
+import { parse as p, Kind as t, print as d, visit as m } from "graphql";
+const E = (c, a, s) => {
   const o = {}, l = {}, r = m(c, {
     [t.VARIABLE_DEFINITION](e) {
       const n = e.variable.name.value, i = `${n}_${s}`;
@@ -50,17 +50,19 @@ const d = (c, a, s) => {
   }
   return { document: r, variables: u };
 };
-class E {
+class h {
   constructor(a) {
     this.operationName = a, this.documents = [], this.internalVariables = [], this.uniqueIdCounter = 1, this.operationType = null;
   }
   push(a, s = {}) {
     typeof a == "string" && (a = p(a));
-    const o = this.uniqueIdCounter++, { document: l, variables: r } = d(a, s, o), u = l.definitions.filter(
+    const o = this.uniqueIdCounter++, { document: l, variables: r } = E(a, s, o), u = l.definitions.filter(
       (n) => n.kind === t.OPERATION_DEFINITION
     );
     if (u.length === 0)
-      throw new Error("No operation definition found in the provided document.");
+      throw new Error(
+        "No operation definition found in the provided document."
+      );
     const e = u[0].operation;
     if (this.operationType && this.operationType !== e)
       throw new Error(
@@ -72,7 +74,9 @@ class E {
     const a = [], s = [], o = [];
     for (const l of this.documents)
       for (const r of l.definitions)
-        r.kind === t.OPERATION_DEFINITION ? (a.push(...r.variableDefinitions || []), s.push(...r.selectionSet.selections)) : r.kind === t.FRAGMENT_DEFINITION && o.push(r);
+        r.kind === t.OPERATION_DEFINITION ? (a.push(
+          ...r.variableDefinitions || []
+        ), s.push(...r.selectionSet.selections)) : r.kind === t.FRAGMENT_DEFINITION && o.push(r);
     return {
       kind: t.DOCUMENT,
       definitions: [
@@ -90,11 +94,14 @@ class E {
       ]
     };
   }
+  getQueryString() {
+    return d(this.query);
+  }
   get variables() {
     return Object.assign({}, ...this.internalVariables);
   }
 }
-const f = (c = "") => new E(c);
+const f = (c = "") => new h(c);
 export {
   f as mergeQueries
 };
