@@ -1,4 +1,4 @@
-import { Kind, parse, visit } from 'graphql';
+import { Kind, parse, visit, print } from 'graphql';
 
 const renameVariablesAndFragments = (document, variables, uniqueId) => {
   const variableNameMap = {};
@@ -89,7 +89,9 @@ class GraphQLQueryMerger {
     );
 
     if (operationDefinitions.length === 0) {
-      throw new Error('No operation definition found in the provided document.');
+      throw new Error(
+        'No operation definition found in the provided document.',
+      );
     }
 
     const operationType = operationDefinitions[0].operation;
@@ -115,7 +117,9 @@ class GraphQLQueryMerger {
     for (const doc of this.documents) {
       for (const definition of doc.definitions) {
         if (definition.kind === Kind.OPERATION_DEFINITION) {
-          allVariableDefinitions.push(...(definition.variableDefinitions || []));
+          allVariableDefinitions.push(
+            ...(definition.variableDefinitions || []),
+          );
           allSelections.push(...definition.selectionSet.selections);
         } else if (definition.kind === Kind.FRAGMENT_DEFINITION) {
           allFragmentDefinitions.push(definition);
@@ -141,11 +145,16 @@ class GraphQLQueryMerger {
     };
   }
 
+  getQueryString() {
+    return print(this.query);
+  }
+
   get variables() {
     return Object.assign({}, ...this.internalVariables);
   }
 }
 
-const mergeQueries = (operationName = '') => new GraphQLQueryMerger(operationName);
+const mergeQueries = (operationName = '') =>
+  new GraphQLQueryMerger(operationName);
 
 export { mergeQueries };
