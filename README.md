@@ -12,6 +12,7 @@
   - [Installation](#installation)
   - [Usage](#usage)
     - [Importing the Library](#importing-the-library)
+    - [Using `getQueryString()` Instead of `print`](#using-getquerystring-instead-of-print)
     - [Combining Queries](#combining-queries)
       - [Basic Query Combination](#basic-query-combination)
       - [Combining Queries with Variables](#combining-queries-with-variables)
@@ -49,13 +50,24 @@ To use the library, import the necessary functions:
 
 ```javascript
 const { mergeQueries } = require('graphql-query-merger');
-const { print } = require('graphql');
 const { gql } = require('graphql-tag');
 ```
 
 - **`mergeQueries()`**: Initializes a new query merger instance.
 - **`push(query, variables?)`**: Adds a query to the merger. Optionally accepts a variables object.
-- **`print()`**: Converts the resulting query to a printable string format.
+- **`getQueryString()`**: Merger method that returns the combined query string. This is a direct replacement for `print(merger.query)` and you do not need to import `print` from `graphql` if you use this method.
+
+### Using `getQueryString()` Instead of `print`
+
+You can get the combined query string using the merger's `getQueryString()` method, instead of using `print` from `graphql`:
+
+```javascript
+const combined = mergeQueries().push(query_1).push(query_2);
+
+console.log(combined.getQueryString()); // Equivalent to print(combined.query)
+```
+
+This simplifies your code and avoids the need to import `print` separately.
 
 ### Combining Queries
 
@@ -84,7 +96,7 @@ const query_2 = /* GraphQL */ gql`
 
 const combined = mergeQueries().push(query_1).push(query_2);
 
-console.log(print(combined.query));
+console.log(combined.getQueryString());
 ```
 
 **Output**:
@@ -127,7 +139,7 @@ const query_2 = /* GraphQL */ `
 
 const combined = mergeQueries().push(query_1, { id: 1 }).push(query_2, { id: 2 });
 
-console.log(print(combined.query));
+console.log(combined.getQueryString());
 console.log(combined.variables);
 ```
 
@@ -191,7 +203,7 @@ if (true) {
   );
 }
 
-console.log(print(combined.query));
+console.log(combined.getQueryString());
 console.log(combined.variables);
 ```
 
